@@ -15,9 +15,18 @@ progress:
 
 # Project State
 
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-10-13)
+
+**Core value:** Reliable, instant visibility into nearby wireless networks and device connection health.
+**Current focus:** Phase 1: Signal Map Stubbing & UI Integration
+
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-10-13 — Milestone v1.0 started
+Phase: 1 of 2 (Signal Map Stubbing & UI Integration)
+Plan: Ready to plan
+Status: Ready to plan
+Last activity: 2026-10-13 — Milestone v1.0 roadmap created
+
+Progress: [░░░░░░░░░░] 0%

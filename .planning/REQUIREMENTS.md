@@ -47,18 +47,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MAP-01 | TBD | Pending |
-| MAP-02 | TBD | Pending |
-| UI-01 | TBD | Pending |
-| UI-02 | TBD | Pending |
-| UI-03 | TBD | Pending |
-| STAB-01 | TBD | Pending |
+| MAP-01 | Phase 1 | Pending |
+| MAP-02 | Phase 2 | Pending |
+| UI-01 | Phase 1 | Pending |
+| UI-02 | Phase 1 | Pending |
+| UI-03 | Phase 1 | Pending |
+| STAB-01 | Phase 2 | Pending |
 
 **Coverage:**
 - v1 requirements: 6 total
-- Mapped to phases: 0
-- Unmapped: 6 ⚠️
+- Mapped to phases: 6
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-13*
-*Last updated: 2026-10-13 after milestone v1.0 definition*
+*Last updated: 2026-10-13 after roadmap mapping*
