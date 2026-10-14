@@ -10,7 +10,7 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 ### Signal Map Decommission
 
 - [x] **MAP-01**: User is prevented from navigating to the unstable native map screen from any app triggers.
-- [ ] **MAP-02**: Problematic native map screen files (`SignalMapScreen.tsx` and `src/screens/SignalMapScreen.tsx`) and map module imports are cleanly removed.
+- [x] **MAP-02**: Problematic native map screen files (`SignalMapScreen.tsx` and `src/screens/SignalMapScreen.tsx`) and map module imports are cleanly removed.
 
 ### User Interface & Coming Soon Feedback
 
@@ -20,7 +20,7 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 
 ### Runtime Stability
 
-- [ ] **STAB-01**: Application boots and navigates between Home, Wi-Fi Checker, and Bluetooth Checker with zero native map dependency crashes.
+- [x] **STAB-01**: Application boots and navigates between Home, Wi-Fi Checker, and Bluetooth Checker with zero native map dependency crashes.
 
 ## v2 Requirements
 
@@ -48,11 +48,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | MAP-01 | Phase 1 | Complete |
-| MAP-02 | Phase 2 | Pending |
+| MAP-02 | Phase 2 | Complete |
 | UI-01 | Phase 1 | Complete |
 | UI-02 | Phase 1 | Complete |
 | UI-03 | Phase 1 | Complete |
-| STAB-01 | Phase 2 | Pending |
+| STAB-01 | Phase 2 | Complete |
 
 **Coverage:**
 - v1 requirements: 6 total
@@ -61,4 +61,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-10-13*
-*Last updated: 2026-10-13 after Phase 1 completion*
+*Last updated: 2026-10-13 after milestone completion*

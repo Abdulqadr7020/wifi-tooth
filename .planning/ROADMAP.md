@@ -7,7 +7,7 @@ Milestone v1.0 focuses on safely decommissioning the problematic native Signal M
 ## Phases
 
 - [x] **Phase 1: Signal Map Stubbing & UI Integration** - Wire dashboard card and bottom nav triggers to display a clean 'Coming Soon' popup without navigating to native map components.
-- [ ] **Phase 2: File Decommission & Runtime Verification** - Remove problematic map screen files and imports, verify clean build, lint, and typecheck.
+- [x] **Phase 2: File Decommission & Runtime Verification** - Remove problematic map screen files and imports, verify clean build, lint, and typecheck.
 
 ## Phase Details
 
@@ -36,10 +36,10 @@ Plans:
   2. All references and imports to `SignalMapScreen` are removed with zero dangling imports.
   3. The codebase passes typechecking (`npx tsc --noEmit`) and linting without errors.
 
-**Plans**: 1 plan
+**Plans**: 1/1 plans complete
 
 Plans:
-- [ ] 02-01: Remove obsolete map screen files, verify imports, and validate build/typecheck stability.
+- [x] 02-01: Remove obsolete map screen files, verify imports, and validate build/typecheck stability.
 
 ## Progress
 
@@ -49,4 +49,4 @@ Phases execute in numeric order: 1 → 2
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Signal Map Stubbing & UI Integration | 1/1 | Complete    | 2026-10-13 |
-| 2. File Decommission & Runtime Verification | 0/1 | Not started | - |
+| 2. File Decommission & Runtime Verification | 1/1 | Complete    | 2026-10-13 |
