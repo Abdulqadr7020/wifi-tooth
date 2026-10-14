@@ -9,14 +9,14 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 
 ### Signal Map Decommission
 
-- [ ] **MAP-01**: User is prevented from navigating to the unstable native map screen from any app triggers.
+- [x] **MAP-01**: User is prevented from navigating to the unstable native map screen from any app triggers.
 - [ ] **MAP-02**: Problematic native map screen files (`SignalMapScreen.tsx` and `src/screens/SignalMapScreen.tsx`) and map module imports are cleanly removed.
 
 ### User Interface & Coming Soon Feedback
 
-- [ ] **UI-01**: User sees a clean "Coming Soon" popup/dialog when tapping the Signal Map card on the Dashboard.
-- [ ] **UI-02**: User sees the "Coming Soon" popup when tapping the Signal Map bottom navigation icon.
-- [ ] **UI-03**: Dashboard layout, typography, and card styling for Signal Map remain visually intact.
+- [x] **UI-01**: User sees a clean "Coming Soon" popup/dialog when tapping the Signal Map card on the Dashboard.
+- [x] **UI-02**: User sees the "Coming Soon" popup when tapping the Signal Map bottom navigation icon.
+- [x] **UI-03**: Dashboard layout, typography, and card styling for Signal Map remain visually intact.
 
 ### Runtime Stability
 
@@ -47,11 +47,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MAP-01 | Phase 1 | Pending |
+| MAP-01 | Phase 1 | Complete |
 | MAP-02 | Phase 2 | Pending |
-| UI-01 | Phase 1 | Pending |
-| UI-02 | Phase 1 | Pending |
-| UI-03 | Phase 1 | Pending |
+| UI-01 | Phase 1 | Complete |
+| UI-02 | Phase 1 | Complete |
+| UI-03 | Phase 1 | Complete |
 | STAB-01 | Phase 2 | Pending |
 
 **Coverage:**
@@ -61,4 +61,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-10-13*
-*Last updated: 2026-10-13 after roadmap mapping*
+*Last updated: 2026-10-13 after Phase 1 completion*
