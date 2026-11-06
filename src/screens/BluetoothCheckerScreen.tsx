@@ -19,9 +19,6 @@ import {
   Speaker,
   RadioTower,
   CheckCircle,
-  House,
-  Wifi,
-  Map,
   RefreshCw,
   Ruler,
   XCircle,
@@ -88,11 +85,22 @@ function DeviceIcon({ name, type }: { name: string; type: 'BLE' | 'Classic' }) {
   return <Bluetooth size={26} color={type === 'Classic' ? C.yellow : C.purple} />;
 }
 
+// RSSI-based distance is an estimate, not an exact physical measurement.
+function estimateDistanceMeters(rssi: number | null): number | null {
+  if (rssi === null || !Number.isFinite(rssi)) return null;
+  // Typical reference RSSI at 1 metre; environment and hardware change this value.
+  const txPowerAtOneMeter = -59;
+  const pathLossExponent = 2.2;
+  const meters = Math.pow(10, (txPowerAtOneMeter - rssi) / (10 * pathLossExponent));
+  if (!Number.isFinite(meters)) return null;
+  return Math.max(0.1, Math.min(99, meters));
+}
+
 export default function BluetoothCheckerScreen({
   navigation,
 }: BluetoothCheckerScreenProps) {
   const [devices, setDevices] = useState<NearbyBluetoothDevice[]>([]);
-  const [scanning, setScanning] = useState(false);
+  const [scanning, setScanning] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connectedDevice, setConnectedDevice] =
     useState<NearbyBluetoothDevice | null>(null);
@@ -361,8 +369,8 @@ export default function BluetoothCheckerScreen({
                   device.isAudioProfile
                     ? styles.audioBadge
                     : device.type === 'Classic'
-                    ? styles.classicBadge
-                    : styles.bleBadge,
+                      ? styles.classicBadge
+                      : styles.bleBadge,
                 ]}
               >
                 <Text style={styles.typeBadgeText}>
@@ -390,11 +398,10 @@ export default function BluetoothCheckerScreen({
               styles.signalFill,
               {
                 backgroundColor: color,
-                width: `${
-                  device.rssi !== null
-                    ? Math.max(5, Math.min(100, Math.round(((device.rssi + 100) / 70) * 100)))
-                    : 100
-                }%`,
+                width: `${device.rssi !== null
+                  ? Math.max(5, Math.min(100, Math.round(((device.rssi + 100) / 70) * 100)))
+                  : 100
+                  }%`,
               },
             ]}
           />
@@ -532,11 +539,10 @@ export default function BluetoothCheckerScreen({
                 <Text style={styles.rangeTitle}>Bluetooth Signal Test</Text>
                 <Text style={styles.subtitle}>
                   {connectedDevice
-                    ? `Device: ${connectedDevice.name} (${
-                        connectedDevice.isAudioProfile
-                          ? 'Audio Profile'
-                          : connectedDevice.type
-                      })`
+                    ? `Device: ${connectedDevice.name} (${connectedDevice.isAudioProfile
+                      ? 'Audio Profile'
+                      : connectedDevice.type
+                    })`
                     : 'Connect a device above to begin'}
                 </Text>
               </View>
@@ -548,38 +554,50 @@ export default function BluetoothCheckerScreen({
               {testing
                 ? 'Live signal status'
                 : connectionLost
-                ? 'Bluetooth connection lost'
-                : lastRssi !== null
-                ? 'Last signal strength'
-                : 'Current signal status'}
+                  ? 'Bluetooth connection lost'
+                  : lastRssi !== null
+                    ? 'Last signal strength'
+                    : 'Current signal status'}
             </Text>
 
             <View style={styles.signalValueRow}>
               <Text style={styles.signalValue}>
                 {connectedDevice?.type === 'BLE' &&
-                (testing ? connectedDevice?.rssi : lastRssi ?? connectedDevice?.rssi) !== null &&
-                (testing ? connectedDevice?.rssi : lastRssi ?? connectedDevice?.rssi) !== undefined
+                  (testing ? connectedDevice?.rssi : lastRssi ?? connectedDevice?.rssi) !== null &&
+                  (testing ? connectedDevice?.rssi : lastRssi ?? connectedDevice?.rssi) !== undefined
                   ? `${testing ? connectedDevice?.rssi : lastRssi ?? connectedDevice?.rssi} dBm`
                   : connectedDevice?.isAudioProfile
-                  ? 'Active Audio'
-                  : connectedDevice
-                  ? 'Connected'
-                  : 'No device'}
+                    ? 'RSSI unavailable'
+                    : connectedDevice
+                      ? 'RSSI unavailable'
+                      : 'No device'}
               </Text>
             </View>
+
+            <Text style={styles.rangeLabel}>Estimated distance</Text>
+            <Text style={[styles.signalValue, { fontSize: 27, marginTop: 6 }]}>
+              {connectedDevice?.type === 'BLE' &&
+                estimateDistanceMeters(testing ? connectedDevice.rssi : lastRssi ?? connectedDevice.rssi) !== null
+                ? `~${estimateDistanceMeters(testing ? connectedDevice.rssi : lastRssi ?? connectedDevice.rssi)!.toFixed(1)} m`
+                : 'Unavailable'}
+            </Text>
+            <Text style={styles.subtitle}>
+              {connectedDevice?.type === 'BLE'
+                ? 'Approximation from live signal strength, not an exact measurement.'
+                : 'This Classic device does not provide a usable live signal reading through the current app API.'}
+            </Text>
 
             <View style={styles.signalTrackLarge}>
               <View
                 style={[
                   styles.signalFillLarge,
                   {
-                    width: `${
-                      connectedDevice?.rssi !== null && connectedDevice?.rssi !== undefined
-                        ? Math.max(10, Math.min(100, ((connectedDevice.rssi + 100) / 70) * 100))
-                        : connectedDevice
+                    width: `${connectedDevice?.rssi !== null && connectedDevice?.rssi !== undefined
+                      ? Math.max(10, Math.min(100, ((connectedDevice.rssi + 100) / 70) * 100))
+                      : connectedDevice
                         ? 85
                         : 0
-                    }%`,
+                      }%`,
                   },
                 ]}
               />
@@ -588,13 +606,13 @@ export default function BluetoothCheckerScreen({
             <Text style={styles.rangeNote}>
               {testing
                 ? connectedDevice?.type === 'BLE'
-                  ? `Monitoring connection and signal from ${connectedDevice.name}. Move away to test real-world range.`
+                  ? `Monitoring ${connectedDevice.name}. Estimated metres update when fresh BLE signal readings arrive; walls and interference affect accuracy.`
                   : `Actively monitoring Bluetooth link to ${connectedDevice?.name}. Move away to test connection boundary.`
                 : connectionLost
-                ? `The connection to ${connectedDevice?.name ?? 'the device'} was lost.`
-                : connectedDevice?.isAudioProfile
-                ? `Connected to ${connectedDevice.name} via phone's Bluetooth settings (Audio profile). Tap Start Signal Test to monitor link status.`
-                : 'Connect a device, then start the test to monitor its real connection and signal strength.'}
+                  ? `The connection to ${connectedDevice?.name ?? 'the device'} was lost.`
+                  : connectedDevice?.isAudioProfile
+                    ? `Connected to ${connectedDevice.name} via phone's Bluetooth settings (Audio profile). Tap Start Signal Test to monitor link status.`
+                    : 'Connect a device, then start the test to monitor its real connection and signal strength.'}
             </Text>
 
             {testing ? (
@@ -627,44 +645,7 @@ export default function BluetoothCheckerScreen({
           </View>
         </ScrollView>
 
-        {/* Bottom Navigation */}
-        <View style={styles.bottomNav}>
-          <TouchableOpacity
-            onPress={() =>
-              navigation?.navigate
-                ? navigation.navigate('home')
-                : (navigation?.goBack ? navigation.goBack() : Alert.alert('Home', 'Connect your Home screen.'))
-            }
-          >
-            <House size={24} color={C.muted} />
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() =>
-              navigation?.navigate
-                ? navigation.navigate('wifi')
-                : Alert.alert('Wi-Fi', 'Connect your Wi-Fi screen.')
-            }
-          >
-            <Wifi size={24} color={C.muted} />
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <Bluetooth size={24} color={C.purple} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() =>
-              Alert.alert(
-                'Coming Soon',
-                'The Signal Map feature is currently under maintenance and will be available in an upcoming update.',
-                [{ text: 'OK', style: 'default' }]
-              )
-            }
-          >
-            <Map size={24} color={C.muted} />
-          </TouchableOpacity>
-        </View>
       </View>
     </SafeAreaView>
   );

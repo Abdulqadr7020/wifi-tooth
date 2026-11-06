@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+
+import React, { useEffect, useRef, useState } from 'react';
 import {
   SafeAreaView,
+  Animated,
   ScrollView,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   StatusBar,
-  Alert,
 } from 'react-native';
 
 import {
@@ -17,23 +18,32 @@ import {
   Bluetooth,
   ArrowUpRight,
   House,
-  Settings,
 } from 'lucide-react-native';
+
 import type { LucideIcon } from 'lucide-react-native';
+
 import WifiCheckerScreen from './src/screens/WifiCheckerScreen';
 import BluetoothCheckerScreen from './src/screens/BluetoothCheckerScreen';
+import SignalMapScreen from './src/screens/SignalMapScreen';
+import IndoorMapScreen from './src/screens/IndoorMapScreen';
 
 const COLORS = {
   background: '#080B10',
   wifiCard: '#102631',
   mapCard: '#191E32',
   bluetoothCard: '#202019',
+  indoorCard: '#172A2B',
   white: '#FFFFFF',
   muted: '#8B98A9',
   cyan: '#67E8F9',
   lavender: '#A5B4FC',
   yellow: '#FDE68A',
+  mint: '#6EE7B7',
+  navActive: '#17212D',
+  border: '#202733',
 };
+
+type Screen = 'home' | 'wifi' | 'bluetooth' | 'map' | 'indoorMap';
 
 interface FeatureCardProps {
   title: string;
@@ -69,83 +79,119 @@ function FeatureCard({
           <Text style={large ? styles.largeTitle : styles.smallTitle}>
             {title}
           </Text>
-
           <Text style={styles.cardSubtitle}>{subtitle}</Text>
         </View>
 
-        <Icon size={large ? 62 : 48} color={color} strokeWidth={1.8} />
+        <Icon
+          size={large ? 62 : 48}
+          color={color}
+          strokeWidth={1.8}
+        />
       </View>
 
       <View style={styles.cardBottom}>
         <Text style={[styles.cardAction, { color }]}>
-          {large ? 'Check Now' : title === 'Signal Map'
-            ? 'Find weak areas'
-            : 'Find devices'}
+          {large
+            ? 'Check Now'
+            : title === 'Signal Map'
+              ? 'Find weak areas'
+              : title === 'Indoor Map'
+                ? 'Map your room'
+                : 'Find devices'}
         </Text>
-
         <ArrowUpRight size={22} color={color} />
       </View>
     </TouchableOpacity>
   );
 }
 
-type Screen = 'home' | 'wifi' | 'bluetooth' | 'map';
+interface NavItemProps {
+  title: string;
+  Icon: LucideIcon;
+  active: boolean;
+  onPress: () => void;
+  color: string;
+}
+
+function NavItem({
+  title,
+  Icon,
+  active,
+  onPress,
+  color,
+}: NavItemProps) {
+  return (
+    <TouchableOpacity
+      style={styles.navItem}
+      onPress={onPress}
+      activeOpacity={0.75}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ selected: active }}
+    >
+      <View
+        style={[
+          styles.navIconContainer,
+          active && styles.navIconActive,
+        ]}
+      >
+        <Icon
+          size={22}
+          color={active ? color : COLORS.muted}
+          strokeWidth={active ? 2.3 : 1.8}
+        />
+      </View>
+
+      <Text
+        numberOfLines={1}
+        style={[
+          styles.navLabel,
+          active && { color, fontWeight: '700' },
+        ]}
+      >
+        {title}
+      </Text>
+    </TouchableOpacity>
+  );
+}
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
+  const screenOpacity = useRef(new Animated.Value(1)).current;
 
-  const showMessage = (feature: string) => {
-    Alert.alert(feature, `${feature} screen will open here.`);
+  useEffect(() => {
+    screenOpacity.setValue(0);
+    Animated.timing(screenOpacity, {
+      toValue: 1,
+      duration: 180,
+      useNativeDriver: true,
+    }).start();
+  }, [currentScreen, screenOpacity]);
+
+  const navigation = {
+    goBack: () => setCurrentScreen('home'),
+    navigate: (screen: string) => {
+      if (
+        ['home', 'wifi', 'bluetooth', 'map', 'indoorMap'].includes(screen)
+      ) {
+        setCurrentScreen(screen as Screen);
+      }
+    },
   };
 
-  const showSignalMapComingSoon = () => {
-    Alert.alert(
-      'Coming Soon',
-      'The Signal Map feature is currently under maintenance and will be available in an upcoming update.',
-      [{ text: 'OK', style: 'default' }]
-    );
-  };
-
-  if (currentScreen === 'wifi') {
+  function renderHome() {
     return (
-      <WifiCheckerScreen
-        navigation={{
-          goBack: () => setCurrentScreen('home'),
-          navigate: (screen: string) => setCurrentScreen(screen as Screen),
-        }}
-      />
-    );
-  }
+      <SafeAreaView style={styles.homeSafeArea}>
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={COLORS.background}
+        />
 
-  if (currentScreen === 'bluetooth') {
-    return (
-      <BluetoothCheckerScreen
-        navigation={{
-          goBack: () => setCurrentScreen('home'),
-          navigate: (screen: string) => setCurrentScreen(screen as Screen),
-        }}
-      />
-    );
-  }
-
-  if (currentScreen === 'map') {
-    showSignalMapComingSoon();
-    setCurrentScreen('home');
-  }
-
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor={COLORS.background}
-      />
-
-      <View style={styles.container}>
         <ScrollView
-          showsVerticalScrollIndicator={false}
+          style={styles.homeScroll}
           contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
           <View style={styles.header}>
             <View>
               <Text style={styles.appName}>SignalScope</Text>
@@ -159,7 +205,6 @@ export default function App() {
             </View>
           </View>
 
-          {/* Wi-Fi Card */}
           <FeatureCard
             title="Wi-Fi"
             subtitle="Check signal and speed"
@@ -170,16 +215,15 @@ export default function App() {
             onPress={() => setCurrentScreen('wifi')}
           />
 
-          {/* Small Cards */}
           <View style={styles.grid}>
             <View style={styles.gridItem}>
               <FeatureCard
                 title="Signal Map"
-                subtitle="Find weak areas"
+                subtitle="Find weak areas outdoors"
                 background={COLORS.mapCard}
                 color={COLORS.lavender}
                 Icon={Map}
-                onPress={showSignalMapComingSoon}
+                onPress={() => setCurrentScreen('map')}
               />
             </View>
 
@@ -194,33 +238,107 @@ export default function App() {
               />
             </View>
           </View>
+
+          <View style={styles.indoorCardContainer}>
+            <FeatureCard
+              title="Indoor Map"
+              subtitle="Map Wi-Fi strength inside your room"
+              background={COLORS.indoorCard}
+              color={COLORS.mint}
+              Icon={House}
+              onPress={() => setCurrentScreen('indoorMap')}
+            />
+          </View>
         </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
-        {/* Bottom Navigation */}
+  function renderActiveScreen() {
+    switch (currentScreen) {
+      case 'wifi':
+        return <WifiCheckerScreen navigation={navigation} />;
+
+      case 'bluetooth':
+        return <BluetoothCheckerScreen navigation={navigation} />;
+
+      case 'map':
+        return (
+          <SignalMapScreen
+            navigation={{
+              goBack: navigation.goBack,
+            }}
+          />
+        );
+
+      case 'indoorMap':
+        return (
+          <IndoorMapScreen
+            navigation={{
+              goBack: navigation.goBack,
+            }}
+          />
+        );
+
+      default:
+        return renderHome();
+    }
+  }
+
+  return (
+    <SafeAreaView style={styles.appSafeArea}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={COLORS.background}
+      />
+
+      <View style={styles.appContainer}>
+        {/* Active screen occupies the space above navigation */}
+        <Animated.View style={[styles.screenContent, { opacity: screenOpacity }]} key={currentScreen}>
+          {renderActiveScreen()}
+        </Animated.View>
+
+        {/* Shared bottom navigation stays visible on every screen */}
         <View style={styles.bottomNav}>
-          <TouchableOpacity
+          <NavItem
+            title="Home"
+            Icon={House}
+            color={COLORS.cyan}
+            active={currentScreen === 'home'}
             onPress={() => setCurrentScreen('home')}
-          >
-            <House size={25} color={COLORS.cyan} />
-          </TouchableOpacity>
+          />
 
-          <TouchableOpacity
+          <NavItem
+            title="Wi-Fi"
+            Icon={Wifi}
+            color={COLORS.cyan}
+            active={currentScreen === 'wifi'}
             onPress={() => setCurrentScreen('wifi')}
-          >
-            <Wifi size={25} color={COLORS.muted} />
-          </TouchableOpacity>
+          />
 
-          <TouchableOpacity
+          <NavItem
+            title="Bluetooth"
+            Icon={Bluetooth}
+            color={COLORS.yellow}
+            active={currentScreen === 'bluetooth'}
             onPress={() => setCurrentScreen('bluetooth')}
-          >
-            <Bluetooth size={25} color={COLORS.muted} />
-          </TouchableOpacity>
+          />
 
-          <TouchableOpacity
-            onPress={showSignalMapComingSoon}
-          >
-            <Map size={25} color={COLORS.muted} />
-          </TouchableOpacity>
+          <NavItem
+            title="Outdoor"
+            Icon={Map}
+            color={COLORS.lavender}
+            active={currentScreen === 'map'}
+            onPress={() => setCurrentScreen('map')}
+          />
+
+          <NavItem
+            title="Indoor"
+            Icon={House}
+            color={COLORS.mint}
+            active={currentScreen === 'indoorMap'}
+            onPress={() => setCurrentScreen('indoorMap')}
+          />
         </View>
       </View>
     </SafeAreaView>
@@ -228,14 +346,28 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  appSafeArea: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
-  container: {
+  appContainer: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+
+  screenContent: {
+    flex: 1,
+    minHeight: 0,
+  },
+
+  homeSafeArea: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+
+  homeScroll: {
+    flex: 1,
   },
 
   scrollContent: {
@@ -343,13 +475,45 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
 
+  indoorCardContainer: {
+    marginTop: 14,
+  },
+
   bottomNav: {
-    height: 68,
+    minHeight: 70,
+    paddingTop: 7,
+    paddingBottom: 4,
     borderTopWidth: 1,
-    borderTopColor: '#202733',
+    borderTopColor: COLORS.border,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
     backgroundColor: COLORS.background,
+  },
+
+  navItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 3,
+    minWidth: 0,
+  },
+
+  navIconContainer: {
+    width: 48,
+    height: 32,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  navIconActive: {
+    backgroundColor: COLORS.navActive,
+  },
+
+  navLabel: {
+    color: COLORS.muted,
+    fontSize: 10,
+    fontWeight: '500',
   },
 });

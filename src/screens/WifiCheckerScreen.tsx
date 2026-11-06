@@ -20,8 +20,6 @@ import {
   RadioTower,
   Map,
   ChevronRight,
-  House,
-  Bluetooth,
 } from 'lucide-react-native';
 import { getWifiDetails } from '../services/wifiService';
 import { runSpeedTest as executeSpeedTest } from '../services/speedTestService';
@@ -271,7 +269,7 @@ export default function WifiCheckerScreen({ navigation }: WifiCheckerScreenProps
             <View style={styles.metricItem}>
               <MetricCard
                 title="Frequency"
-                value={loading ? '...' : wifiData ? formatFrequency(wifiData.frequency) : '5 GHz'}
+                value={loading ? '...' : wifiData ? formatFrequency(wifiData.frequency) : '—'}
                 Icon={RadioTower}
                 color={C.yellow}
               />
@@ -314,38 +312,7 @@ export default function WifiCheckerScreen({ navigation }: WifiCheckerScreenProps
           </TouchableOpacity>
         </ScrollView>
 
-        {/* Bottom Navigation */}
-        <View style={styles.bottomNav}>
-          <TouchableOpacity
-            onPress={() =>
-              navigation?.navigate
-                ? navigation.navigate('home')
-                : (navigation?.goBack ? navigation.goBack() : showMessage('Home'))
-            }
-          >
-            <House size={24} color={C.muted} />
-          </TouchableOpacity>
 
-          <TouchableOpacity>
-            <Wifi size={24} color={C.cyan} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() =>
-              navigation?.navigate
-                ? navigation.navigate('bluetooth')
-                : showMessage('Bluetooth')
-            }
-          >
-            <Bluetooth size={24} color={C.muted} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={showSignalMapComingSoon}
-          >
-            <Map size={24} color={C.muted} />
-          </TouchableOpacity>
-        </View>
       </View>
     </SafeAreaView>
   );
